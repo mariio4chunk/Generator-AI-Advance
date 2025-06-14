@@ -1,0 +1,3274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt Generator Pro - Gemini AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --motion-blur: blur(8px);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: -2s;
+        }
+        
+        .shape:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 70%;
+            left: 80%;
+            animation-delay: -8s;
+        }
+        
+        .shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            top: 40%;
+            left: 90%;
+            animation-delay: -15s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(120deg); }
+            66% { transform: translateY(20px) rotate(240deg); }
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+            animation: containerFloat 6s ease-in-out infinite;
+        }
+        
+        @keyframes containerFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            animation: titlePulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            font-weight: 400;
+            animation: fadeInUp 1s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 0.95;
+                transform: translateY(0);
+            }
+        }
+        
+        .container {
+            padding: 50px;
+        }
+        
+        .api-setup {
+            background: var(--warning-gradient);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border: none;
+            box-shadow: 
+                0 10px 25px rgba(67, 233, 123, 0.3),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            position: relative;
+            overflow: hidden;
+            animation: slideInLeft 0.8s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .api-setup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(5px);
+            z-index: -1;
+        }
+        
+        .api-setup h3 {
+            color: #2d5016;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .api-setup h3::before {
+            content: "🔑";
+            font-size: 1.5rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        .api-setup ol {
+            margin: 20px 0;
+            padding-left: 25px;
+            color: #1a3308;
+        }
+        
+        .api-setup a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .api-setup a:hover {
+            color: #004499;
+            text-decoration: underline;
+            transform: scale(1.05);
+        }
+        
+        .form-group {
+            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #333;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--glass-border);
+            border-radius: 15px;
+            font-size: 16px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .api-key-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .api-key-container input {
+            flex: 1;
+            padding-right: 100px;
+        }
+        
+        .paste-btn, .toggle-visibility-btn {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            z-index: 10;
+        }
+        
+        .toggle-visibility-btn {
+            right: 8px;
+        }
+        
+        .paste-btn:hover, .toggle-visibility-btn:hover {
+            background: var(--secondary-gradient);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+        }
+        
+        .paste-btn:active, .toggle-visibility-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 
+                0 0 0 4px rgba(102, 126, 234, 0.2),
+                0 8px 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 8px 25px rgba(102, 126, 234, 0.4),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 12px 35px rgba(102, 126, 234, 0.5),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+        
+        .btn:disabled {
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .status {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--success-gradient);
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid rgba(79, 172, 254, 0.3);
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            animation: statusPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes statusPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(79, 172, 254, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(79, 172, 254, 0.6); }
+        }
+        
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            animation: slideInRight 0.8s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .settings-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .settings-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-group:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-card h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .feature-card p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .output {
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            animation: scaleIn 0.8s ease-out;
+        }
+        
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .output-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 25px;
+            position: relative;
+        }
+        
+        .output-header h3 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        
+        .output-header h3::before {
+            content: "✨";
+            margin-right: 12px;
+            font-size: 1.6rem;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+        }
+        
+        .output-content {
+            padding: 30px;
+            min-height: 250px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+        }
+        
+        .output-content pre {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .output-actions {
+            padding: 25px;
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .copy-btn, .regenerate-btn, .export-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .copy-btn {
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 233, 123, 0.4);
+        }
+        
+        .regenerate-btn {
+            background: var(--secondary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .copy-btn:hover, .regenerate-btn:hover, .export-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 
+                0 8px 25px rgba(0,0,0,0.3),
+                0 0 20px rgba(255,255,255,0.5);
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #666;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
+        
+        .examples {
+            margin-top: 30px;
+            padding: 30px;
+            background: var(--success-gradient);
+            border-radius: 20px;
+            border: 1px solid rgba(79, 172, 254, 0.3);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.2);
+        }
+        
+        .examples h3 {
+            margin-bottom: 20px;
+            color: white;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* Professional API Setup Styles */
+        .api-setup-professional {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 
+                0 20px 40px rgba(102, 126, 234, 0.3),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            animation: slideInFromTop 0.8s ease-out;
+        }
+        
+        .api-setup-professional::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 4s infinite;
+        }
+        
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .setup-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .api-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            animation: iconPulse 3s ease-in-out infinite;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .setup-title h3 {
+            margin: 0;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .setup-subtitle {
+            margin: 5px 0 0 0;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+        
+        .setup-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-item {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .step-item[data-step="1"] { animation-delay: 0.1s; }
+        .step-item[data-step="2"] { animation-delay: 0.2s; }
+        .step-item[data-step="3"] { animation-delay: 0.3s; }
+        .step-item[data-step="4"] { animation-delay: 0.4s; }
+        
+        .step-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .step-number {
+            width: 35px;
+            height: 35px;
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .step-content h4 {
+            margin: 0 0 8px 0;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        
+        .step-content p {
+            margin: 0;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .professional-link {
+            color: #FFD700;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .professional-link:hover {
+            color: #FFF;
+            text-decoration: underline;
+            transform: translateX(3px);
+        }
+        
+        .api-benefits {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .benefit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+        
+        .benefit-item {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            animation: scaleIn 0.6s ease-out;
+        }
+        
+        .benefit-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+        
+        .benefit-item i {
+            font-size: 1.5rem;
+            color: #FFD700;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .benefit-item span {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Enhanced API Key Form */
+        .api-key-form {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 
+                0 15px 35px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            animation: slideInFromBottom 0.8s ease-out;
+        }
+        
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-header {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .form-header h4 {
+            margin: 0 0 8px 0;
+            color: #333;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .form-header p {
+            margin: 0;
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .form-group-enhanced {
+            margin-bottom: 20px;
+        }
+        
+        .professional-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .required-indicator {
+            color: #e74c3c;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        
+        .api-input-container {
+            position: relative;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            border: 2px solid transparent;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .input-wrapper:hover {
+            background: rgba(255,255,255,1);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: #667eea;
+            box-shadow: 
+                0 0 0 4px rgba(102, 126, 234, 0.2),
+                0 15px 40px rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .api-input {
+            flex: 1;
+            padding: 18px 20px;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            color: #333;
+            outline: none;
+            font-weight: 500;
+        }
+        
+        .api-input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+        
+        .input-actions {
+            display: flex;
+            gap: 5px;
+            padding: 5px;
+        }
+        
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .paste-btn {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .clear-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .validate-btn {
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .keyboard-shortcut {
+            margin-top: 12px;
+            text-align: center;
+        }
+        
+        .shortcut-text {
+            color: #666;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .shortcut-text kbd {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #495057;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .api-key-status {
+            margin-top: 15px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            background: rgba(13, 110, 253, 0.1);
+            border: 1px solid rgba(13, 110, 253, 0.2);
+            color: #0d6efd;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .api-key-status.success {
+            background: rgba(25, 135, 84, 0.1);
+            border-color: rgba(25, 135, 84, 0.2);
+            color: #198754;
+        }
+        
+        .api-key-status.error {
+            background: rgba(220, 53, 69, 0.1);
+            border-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+        
+        .api-key-status.warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+        
+        .example-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 12px;
+            border-left: 5px solid #2196f3;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .example-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .example-item strong {
+            color: #1565c0;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        /* Enhanced Responsive Design */
+        @media (max-width: 1200px) {
+            .main-container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .container {
+                padding: 40px 30px;
+            }
+            
+            .copyright-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+                margin-bottom: 10px;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .container {
+                padding: 25px 15px;
+            }
+            
+            .settings-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .feature-cards {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .output-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .copy-btn, .regenerate-btn, .export-btn {
+                padding: 15px;
+                font-size: 16px;
+            }
+            
+            .stats {
+                margin-left: 0;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .api-key-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .api-key-container input {
+                padding-right: 20px;
+                font-size: 16px;
+            }
+            
+            .paste-btn, .toggle-visibility-btn {
+                position: static;
+                transform: none;
+                width: 100%;
+                height: auto;
+                padding: 12px;
+                border-radius: 10px;
+            }
+            
+            .toggle-visibility-btn {
+                margin-top: 5px;
+            }
+            
+            .copyright-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .brand-logo {
+                justify-content: center;
+                text-align: center;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .creator-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 15px;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .feature-item {
+                font-size: 0.9rem;
+                padding: 12px;
+            }
+            
+            .enhanced-copyright {
+                padding: 20px 15px;
+                margin-top: 30px;
+            }
+            
+            .stat-number {
+                font-size: 1.3rem;
+            }
+            
+            .stat-label {
+                font-size: 0.75rem;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .btn {
+                padding: 15px;
+                font-size: 16px;
+                margin-bottom: 15px;
+            }
+            
+            .api-setup {
+                padding: 20px;
+                margin-bottom: 25px;
+            }
+            
+            .api-setup h3 {
+                font-size: 1.1rem;
+            }
+            
+            .settings-panel {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .settings-title {
+                font-size: 1.1rem;
+            }
+            
+            input, select {
+                padding: 12px 15px;
+                font-size: 16px;
+            }
+            
+            label {
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+            
+            .checkbox-group {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+            
+            .feature-card {
+                padding: 20px;
+            }
+            
+            .feature-card h4 {
+                font-size: 1rem;
+                margin-bottom: 8px;
+            }
+            
+            .feature-card p {
+                font-size: 0.85rem;
+            }
+            
+            .output-header {
+                padding: 20px;
+            }
+            
+            .output-content {
+                padding: 20px;
+                min-height: 200px;
+            }
+            
+            .output-content pre {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .settings-panel,
+            .api-setup,
+            .examples {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .output-content {
+                padding: 15px;
+                min-height: 150px;
+            }
+            
+            .output-actions {
+                padding: 15px;
+            }
+            
+            .enhanced-copyright {
+                padding: 15px 10px;
+            }
+            
+            .brand-text h2 {
+                font-size: 1.2rem;
+            }
+            
+            .version-tag {
+                font-size: 0.7rem;
+                padding: 3px 8px;
+            }
+            
+            .creator-details h3 {
+                font-size: 1rem;
+            }
+            
+            .creator-details p {
+                font-size: 0.8rem;
+            }
+            
+            .stat-number {
+                font-size: 1.1rem;
+            }
+            
+            .modal-content {
+                width: 98%;
+                padding: 15px;
+            }
+        }
+        
+        /* Enhanced Copyright Styles */
+        .enhanced-copyright {
+            margin-top: 50px;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+            border-radius: 30px;
+            padding: 40px;
+            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.4),
+                inset 0 2px 0 rgba(255,255,255,0.1),
+                0 0 100px rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+        
+        .enhanced-copyright::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 6s infinite;
+        }
+        
+        .copyright-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .brand-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-circle {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(5deg); }
+        }
+        
+        .brand-text h2 {
+            margin: 0;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .version-tag {
+            background: var(--warning-gradient);
+            color: #2d5016;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        .creator-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .creator-card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--secondary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .creator-details h3 {
+            margin: 0;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        
+        .creator-details p {
+            margin: 2px 0 8px 0;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .social-icon {
+            width: 25px;
+            height: 25px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .social-icon:hover {
+            background: var(--primary-gradient);
+            transform: scale(1.2);
+        }
+        
+        .features-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .pro-badge-enhanced {
+            position: relative;
+            background: var(--warning-gradient);
+            color: #2d5016;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 8px 25px rgba(67, 233, 123, 0.4);
+            overflow: hidden;
+        }
+        
+        .badge-glow {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: badgeGlow 2s infinite;
+        }
+        
+        @keyframes badgeGlow {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+        
+        .feature-item {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(3px);
+        }
+        
+        .feature-item i {
+            color: var(--primary-gradient);
+            width: 16px;
+        }
+        
+        .stats-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.05);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+            font-weight: 500;
+        }
+        
+        .footer-copyright::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 4s infinite;
+        }
+        
+        .copyright-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .pro-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--warning-gradient);
+            color: #2d5016;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(67, 233, 123, 0.4);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 4px 15px rgba(67, 233, 123, 0.4); }
+            to { box-shadow: 0 6px 25px rgba(67, 233, 123, 0.8); }
+        }
+        
+        .creator-info {
+            text-align: center;
+            color: white;
+        }
+        
+        .creator-name {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .creator-name strong {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            font-size: 1.3rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .version-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        .tech-stack {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tech-item {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .tech-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,255,255,0.2);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-gradient);
+        }
+        
+        /* Enhanced Animations */
+        @keyframes inputGlow {
+            0% { box-shadow: 0 0 5px rgba(102, 126, 234, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(102, 126, 234, 0.3); }
+        }
+        
+        @keyframes statusSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes buttonPulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+            }
+        }
+        
+        /* Professional Touch Improvements */
+        .api-input:focus {
+            animation: inputGlow 2s ease-in-out infinite;
+        }
+        
+        .step-item:nth-child(even) {
+            animation-delay: 0.2s;
+        }
+        
+        .step-item:nth-child(odd) {
+            animation-delay: 0.1s;
+        }
+        
+        .benefit-item:hover i {
+            animation: bounce 0.6s ease-in-out;
+        }
+        
+        /* Mobile optimizations for new design */
+        @media (max-width: 768px) {
+            .api-setup-professional {
+                padding: 25px 20px;
+                border-radius: 20px;
+            }
+            
+            .setup-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .api-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            
+            .setup-title h3 {
+                font-size: 1.5rem;
+            }
+            
+            .setup-steps {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .benefit-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .api-key-form {
+                padding: 25px 20px;
+                border-radius: 20px;
+            }
+            
+            .input-wrapper {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .input-actions {
+                justify-content: center;
+                width: 100%;
+                padding: 10px;
+            }
+            
+            .api-input {
+                text-align: center;
+                font-size: 14px;
+            }
+            
+            .action-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 16px;
+            }
+            
+            .keyboard-shortcut {
+                margin-top: 15px;
+            }
+            
+            .shortcut-text {
+                font-size: 0.8rem;
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    
+    <div class="main-container">
+        <div class="header">
+            <h1><i class="fas fa-rocket"></i> AI Prompt Generator Pro</h1>
+            <p>Powered by Google Gemini AI - Generate High-Quality Prompts with Advanced Features</p>
+        </div>
+        
+        <div class="container">
+            <!-- Enhanced Copyright Section -->
+            <div class="enhanced-copyright" style="margin-top: 0; margin-bottom: 40px;">
+                <div class="copyright-grid">
+                    <div class="brand-section">
+                        <div class="brand-logo">
+                            <div class="logo-circle">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="brand-text">
+                                <h2>AI Prompt Generator</h2>
+                                <span class="version-tag">Pro Edition v2.1</span>
+                            </div>
+                        </div>
+                        <div class="creator-card">
+                            <div class="avatar">
+                                <i class="fas fa-user-astronaut"></i>
+                            </div>
+                            <div class="creator-details">
+                                <h3>Rizqi Agung</h3>
+                                <p>Full-Stack AI Developer</p>
+                                <div class="social-links">
+                                    <span class="social-icon"><i class="fab fa-github"></i></span>
+                                    <span class="social-icon"><i class="fab fa-linkedin"></i></span>
+                                    <span class="social-icon"><i class="fas fa-envelope"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="features-section">
+                        <div class="pro-badge-enhanced">
+                            <i class="fas fa-crown"></i>
+                            <span>PREMIUM</span>
+                            <div class="badge-glow"></div>
+                        </div>
+                        <div class="feature-grid">
+                            <div class="feature-item">
+                                <i class="fas fa-robot"></i>
+                                <span>Gemini AI Powered</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-bolt"></i>
+                                <span>Lightning Fast</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-palette"></i>
+                                <span>Modern UI/UX</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Enterprise Security</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-infinity"></i>
+                                <span>Unlimited Prompts</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-magic"></i>
+                                <span>AI-Optimized</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-section">
+                        <div class="stat-card">
+                            <div class="stat-number" id="promptsGenerated">1,247</div>
+                            <div class="stat-label">Prompts Generated</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">99.9%</div>
+                            <div class="stat-label">Uptime</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">15+</div>
+                            <div class="stat-label">AI Models</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="api-setup-professional">
+                <div class="setup-header">
+                    <div class="api-icon">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <div class="setup-title">
+                        <h3>🔑 Konfigurasi Google Gemini API</h3>
+                        <p class="setup-subtitle">Dapatkan akses gratis ke AI terdepan di dunia</p>
+                    </div>
+                </div>
+                
+                <div class="setup-steps">
+                    <div class="step-item" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Akses Google AI Studio</h4>
+                            <p>Kunjungi <a href="https://makersuite.google.com/app/apikey" target="_blank" class="professional-link">
+                                <i class="fas fa-external-link-alt"></i> Google AI Studio
+                            </a> menggunakan browser Anda</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Autentikasi Google Account</h4>
+                            <p>Login menggunakan kredensial Google Account Anda yang aktif</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Generate API Key</h4>
+                            <p>Klik tombol <strong>"Create API Key"</strong> untuk mendapatkan akses token</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Copy & Paste API Key</h4>
+                            <p>Salin API key dan tempelkan pada form di bawah ini</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="api-benefits">
+                    <div class="benefit-grid">
+                        <div class="benefit-item">
+                            <i class="fas fa-gift"></i>
+                            <span>100% Gratis</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-infinity"></i>
+                            <span>Kuota Besar</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-shield-check"></i>
+                            <span>Aman & Terpercaya</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-rocket"></i>
+                            <span>AI Terbaru</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="api-key-form">
+                <div class="form-header">
+                    <h4><i class="fas fa-key"></i> Konfigurasi API Key</h4>
+                    <p>Masukkan API key untuk mengaktifkan generator</p>
+                </div>
+                
+                <div class="form-group-enhanced">
+                    <label for="apiKey" class="professional-label">
+                        <i class="fas fa-lock"></i>
+                        <span>Google Gemini API Key</span>
+                        <span class="required-indicator">*</span>
+                    </label>
+                    
+                    <div class="api-input-container">
+                        <div class="input-wrapper">
+                            <input 
+                                type="text" 
+                                id="apiKey" 
+                                placeholder="AIzaSy... (Paste your API key here)"
+                                class="api-input"
+                                autocomplete="off"
+                                spellcheck="false"
+                            />
+                            <div class="input-actions">
+                                <button type="button" class="action-btn paste-btn" onclick="pasteFromClipboard()" title="Paste dari clipboard">
+                                    <i class="fas fa-clipboard"></i>
+                                </button>
+                                <button type="button" class="action-btn clear-btn" onclick="clearApiKey()" title="Clear input">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <button type="button" class="action-btn validate-btn" onclick="validateApiKey()" title="Validate API key">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="keyboard-shortcut">
+                            <span class="shortcut-text">
+                                <i class="fas fa-keyboard"></i>
+                                Tip: Tekan <kbd>Ctrl+V</kbd> untuk paste langsung
+                            </span>
+                        </div>
+                        
+                        <div class="api-key-status" id="apiKeyStatus">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Masukkan API key untuk memulai</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="status" class="status">
+                <i class="fas fa-wifi"></i> Status: Masukkan API key Gemini untuk mulai menggunakan generator
+            </div>
+            
+            <button id="connectBtn" class="btn" onclick="connectToGemini()">
+                <i class="fas fa-link"></i> Hubungkan ke Gemini AI
+            </button>
+            
+            <div id="generatorSection" class="hidden">
+                <div class="settings-panel">
+                    <div class="settings-title"><i class="fas fa-cogs"></i> Pengaturan Generator</div>
+                    
+                    <div class="settings-row">
+                        <div class="form-group">
+                            <label for="topic"><i class="fas fa-tags"></i> Pilih Topik:</label>
+                            <select id="topic" onchange="showAdditionalOptions()">
+                                <option value="pekerjaan">💼 Pekerjaan & Karir</option>
+                                <option value="hobi">🎨 Hobi & Kreativitas</option>
+                                <option value="teknologi">💻 Teknologi & Inovasi</option>
+                                <option value="game">🎮 Game Development</option>
+                                <option value="kesehatan">🏥 Kesehatan & Wellness</option>
+                                <option value="pendidikan">📚 Pendidikan & Pembelajaran</option>
+                                <option value="lingkungan">🌱 Lingkungan & Sustainability</option>
+                                <option value="bisnis">📈 Bisnis & Entrepreneurship</option>
+                                <option value="seni">🎭 Seni & Desain</option>
+                                <option value="perjalanan">✈️ Perjalanan & Wisata</option>
+                                <option value="makanan">🍕 Makanan & Kuliner</option>
+                                <option value="programming">👨‍💻 Programming & Software</option>
+                                <option value="ai_ml">🤖 AI & Machine Learning</option>
+                                <option value="blockchain">⛓️ Blockchain & Crypto</option>
+                                <option value="cybersecurity">🔒 Cybersecurity & InfoSec</option>
+                                <option value="web_development">🌐 Web Development</option>
+                                <option value="mobile_dev">📱 Mobile Development</option>
+                                <option value="data_science">📊 Data Science & Analytics</option>
+                                <option value="devops">⚙️ DevOps & Cloud</option>
+                                <option value="digital_marketing">📢 Digital Marketing</option>
+                                <option value="ecommerce">🛒 E-commerce & Retail</option>
+                                <option value="finansial">💰 Finansial & Investasi</option>
+                                <option value="psikologi">🧠 Psikologi & Behavior</option>
+                                <option value="komunikasi">📞 Komunikasi & Public Speaking</option>
+                                <option value="kepemimpinan">👑 Kepemimpinan & Management</option>
+                                <option value="produktivitas">⚡ Produktivitas & Time Management</option>
+                                <option value="real_estate">🏠 Real Estate & Property</option>
+                                <option value="fashion">👗 Fashion & Style</option>
+                                <option value="fotografi">📸 Fotografi & Videografi</option>
+                                <option value="musik">🎵 Musik & Audio Production</option>
+                                <option value="olahraga">🏃‍♂️ Olahraga & Fitness</option>
+                                <option value="parenting">👨‍👩‍👧‍👦 Parenting & Family</option>
+                                <option value="relationship">💕 Relationship & Dating</option>
+                                <option value="spiritual">🙏 Spiritual & Mindfulness</option>
+                                <option value="science">🔬 Science & Research</option>
+                                <option value="hukum">⚖️ Hukum & Legal</option>
+                                <option value="automotive">🚗 Automotive & Transportation</option>
+                                <option value="agriculture">🌾 Agriculture & Farming</option>
+                                <option value="interior_design">🏡 Interior Design & Architecture</option>
+                                <option value="social_media">📲 Social Media & Content</option>
+                                <option value="nonprofit">🤝 Nonprofit & Social Impact</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="promptType"><i class="fas fa-bullseye"></i> Tipe Prompt:</label>
+                            <select id="promptType">
+                                <option value="creative">💡 Kreatif & Inovatif</option>
+                                <option value="technical">🔧 Teknis & Analitis</option>
+                                <option value="storytelling">📖 Cerita & Naratif</option>
+                                <option value="brainstorming">🧠 Brainstorming & Ideation</option>
+                                <option value="problemSolving">🔍 Pemecahan Masalah</option>
+                                <option value="codeGeneration">💻 Generate Kode Programming</option>
+                                <option value="tutorial">📝 Tutorial & How-to Guide</option>
+                                <option value="analysis">📊 Analisis & Data Mining</option>
+                                <option value="research">🔬 Research & Investigation</option>
+                                <option value="marketing">📢 Marketing & Branding</option>
+                                <option value="strategy">♟️ Strategy & Planning</option>
+                                <option value="automation">🤖 Automation & Workflow</option>
+                                <option value="optimization">⚡ Optimization & Performance</option>
+                                <option value="design_thinking">🎨 Design Thinking & UX</option>
+                                <option value="presentation">🎯 Presentation & Pitch</option>
+                                <option value="documentation">📋 Documentation & Manual</option>
+                                <option value="training">🎓 Training & Workshop</option>
+                                <option value="consulting">💼 Consulting & Advisory</option>
+                                <option value="competitive_analysis">🏆 Competitive Analysis</option>
+                                <option value="financial_modeling">💹 Financial Modeling</option>
+                                <option value="customer_journey">👥 Customer Journey Mapping</option>
+                                <option value="content_creation">✍️ Content Creation & Copywriting</option>
+                                <option value="project_management">📅 Project Management</option>
+                                <option value="quality_assurance">✅ Quality Assurance & Testing</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-row">
+                        <div class="form-group">
+                            <label for="complexity"><i class="fas fa-layer-group"></i> Tingkat Kompleksitas:</label>
+                            <select id="complexity">
+                                <option value="beginner">🌱 Beginner (Pemula Total)</option>
+                                <option value="simple">🔰 Simple (Mudah Dipahami)</option>
+                                <option value="intermediate">⚡ Intermediate (Menengah)</option>
+                                <option value="advanced">🚀 Advanced (Lanjutan)</option>
+                                <option value="expert">👑 Expert (Ahli)</option>
+                                <option value="professional">💼 Professional (Profesional)</option>
+                                <option value="enterprise">🏢 Enterprise (Korporat)</option>
+                                <option value="research">🔬 Research Level (Penelitian)</option>
+                                <option value="consultant">🎯 Consultant Grade (Konsultan)</option>
+                                <option value="industry_leader">🌟 Industry Leader (Pemimpin Industri)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="length"><i class="fas fa-ruler-horizontal"></i> Panjang Output:</label>
+                            <select id="length">
+                                <option value="micro">🔸 Micro (50-100 kata)</option>
+                                <option value="brief">📌 Brief (100-200 kata)</option>
+                                <option value="short">📝 Pendek (200-350 kata)</option>
+                                <option value="medium">📄 Menengah (350-600 kata)</option>
+                                <option value="detailed">📊 Detailed (600-900 kata)</option>
+                                <option value="long">📚 Panjang (900-1200 kata)</option>
+                                <option value="comprehensive">📋 Comprehensive (1200-1800 kata)</option>
+                                <option value="extensive">📖 Extensive (1800-2500 kata)</option>
+                                <option value="ultimate">🚀 Ultimate (2500+ kata)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="includeExamples" checked>
+                        <label for="includeExamples"><i class="fas fa-list-ul"></i> Sertakan contoh dalam prompt</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="randomizeStyle" checked>
+                        <label for="randomizeStyle"><i class="fas fa-dice"></i> Randomize gaya penulisan (untuk variasi)</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="includeMetrics" checked>
+                        <label for="includeMetrics"><i class="fas fa-chart-bar"></i> Sertakan metrics & KPI</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="includeTimeline" checked>
+                        <label for="includeTimeline"><i class="fas fa-calendar-alt"></i> Include timeline & milestones</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="includeResources" checked>
+                        <label for="includeResources"><i class="fas fa-toolbox"></i> Sertakan tools & resources</label>
+                    </div>
+                </div>
+                
+                <div class="settings-panel">
+                    <div class="settings-title"><i class="fas fa-palette"></i> Tema & Gaya Penulisan</div>
+                    
+                    <div class="settings-row">
+                        <div class="form-group">
+                            <label for="writingTheme"><i class="fas fa-feather-alt"></i> Tema Penulisan:</label>
+                            <select id="writingTheme">
+                                <option value="professional">🎯 Professional & Formal</option>
+                                <option value="casual">😊 Casual & Friendly</option>
+                                <option value="academic">🎓 Academic & Research</option>
+                                <option value="creative">🎨 Creative & Artistic</option>
+                                <option value="motivational">💪 Motivational & Inspiring</option>
+                                <option value="technical">⚙️ Technical & Precise</option>
+                                <option value="storytelling">📚 Storytelling & Narrative</option>
+                                <option value="minimalist">✨ Minimalist & Clean</option>
+                                <option value="detailed">📖 Detailed & Comprehensive</option>
+                                <option value="conversational">💬 Conversational & Interactive</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="targetAudience"><i class="fas fa-users"></i> Target Audience:</label>
+                            <select id="targetAudience">
+                                <option value="general">👥 General Public</option>
+                                <option value="students">🎓 Students & Learners</option>
+                                <option value="professionals">💼 Business Professionals</option>
+                                <option value="developers">👨‍💻 Developers & Engineers</option>
+                                <option value="entrepreneurs">🚀 Entrepreneurs & Founders</option>
+                                <option value="researchers">🔬 Researchers & Academics</option>
+                                <option value="creatives">🎨 Creatives & Artists</option>
+                                <option value="executives">🏆 Executives & Leaders</option>
+                                <option value="consultants">🎯 Consultants & Advisors</option>
+                                <option value="specialists">⭐ Industry Specialists</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-row">
+                        <div class="form-group">
+                            <label for="outputFormat"><i class="fas fa-file-alt"></i> Format Output:</label>
+                            <select id="outputFormat">
+                                <option value="structured">📋 Structured & Organized</option>
+                                <option value="bullet_points">• Bullet Points & Lists</option>
+                                <option value="numbered_steps">📝 Numbered Steps</option>
+                                <option value="paragraph">📄 Paragraph Format</option>
+                                <option value="table_format">📊 Table & Chart Format</option>
+                                <option value="code_snippets">💻 Code Snippets & Examples</option>
+                                <option value="qa_format">❓ Q&A Format</option>
+                                <option value="tutorial_style">🎓 Tutorial Style</option>
+                                <option value="checklist">✅ Checklist Format</option>
+                                <option value="flowchart">🔄 Flowchart & Process</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="urgencyLevel"><i class="fas fa-clock"></i> Tingkat Urgensi:</label>
+                            <select id="urgencyLevel">
+                                <option value="low">🟢 Low Priority (Tidak Mendesak)</option>
+                                <option value="medium">🟡 Medium Priority (Sedang)</option>
+                                <option value="high">🟠 High Priority (Penting)</option>
+                                <option value="critical">🔴 Critical (Sangat Mendesak)</option>
+                                <option value="emergency">🚨 Emergency (Darurat)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="gameOptions" class="hidden settings-panel">
+                    <div class="settings-title"><i class="fas fa-gamepad"></i> Pengaturan Game Development</div>
+                    <div class="settings-row">
+                        <div class="form-group">
+                            <label for="gameTheme"><i class="fas fa-palette"></i> Tema Game:</label>
+                            <select id="gameTheme">
+                                <option value="fantasy">🏰 Fantasy</option>
+                                <option value="sciFi">🚀 Sci-Fi</option>
+                                <option value="adventure">🗺️ Adventure</option>
+                                <option value="sports">⚽ Sports</option>
+                                <option value="horror">👻 Horror</option>
+                                <option value="mystery">🔍 Mystery</option>
+                                <option value="simulation">🏗️ Simulation</option>
+                                <option value="educational">📚 Educational</option>
+                                <option value="casual">🎯 Casual</option>
+                                <option value="retro">👾 Retro/Pixel</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gameMechanics"><i class="fas fa-cog"></i> Mekanisme Game:</label>
+                            <select id="gameMechanics">
+                                <option value="puzzle">🧩 Puzzle</option>
+                                <option value="rpg">🗡️ RPG</option>
+                                <option value="strategy">♟️ Strategy</option>
+                                <option value="shooter">🔫 Shooter</option>
+                                <option value="platformer">🏃 Platformer</option>
+                                <option value="simulation">🏗️ Simulation</option>
+                                <option value="tower_defense">🏰 Tower Defense</option>
+                                <option value="racing">🏎️ Racing</option>
+                                <option value="sandbox">📦 Sandbox</option>
+                                <option value="multiplayer">👥 Multiplayer</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-row">
+                        <div class="form-group">
+                            <label for="programmingLanguage"><i class="fas fa-code"></i> Bahasa Programming:</label>
+                            <select id="programmingLanguage">
+                                <option value="unity_csharp">🎮 Unity (C#)</option>
+                                <option value="unreal_cpp">🎯 Unreal Engine (C++)</option>
+                                <option value="javascript">🌐 JavaScript (Web Games)</option>
+                                <option value="python_pygame">🐍 Python (Pygame)</option>
+                                <option value="java">☕ Java</option>
+                                <option value="swift">📱 Swift (iOS)</option>
+                                <option value="kotlin">🤖 Kotlin (Android)</option>
+                                <option value="rust">⚡ Rust</option>
+                                <option value="lua">🌙 Lua</option>
+                                <option value="gdscript">🎲 GDScript (Godot)</option>
+                                <option value="html5">🌍 HTML5 Canvas</option>
+                                <option value="flutter_dart">📱 Flutter (Dart)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gameEngine"><i class="fas fa-engine"></i> Game Engine:</label>
+                            <select id="gameEngine">
+                                <option value="unity">🎮 Unity</option>
+                                <option value="unreal">🎯 Unreal Engine</option>
+                                <option value="godot">🎲 Godot</option>
+                                <option value="construct3">🔧 Construct 3</option>
+                                <option value="gamemaker">🎪 GameMaker Studio</option>
+                                <option value="phaser">🌐 Phaser.js</option>
+                                <option value="love2d">❤️ LÖVE 2D</option>
+                                <option value="defold">💎 Defold</option>
+                                <option value="corona">☀️ Corona SDK</option>
+                                <option value="custom">⚙️ Custom Engine</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-cards">
+                    <div class="feature-card" onclick="toggleFeature('advanced-ai')">
+                        <h4><i class="fas fa-brain"></i> Advanced AI Prompts</h4>
+                        <p>Generate prompts yang dioptimalkan untuk AI model terbaru</p>
+                    </div>
+                    <div class="feature-card" onclick="toggleFeature('code-review')">
+                        <h4><i class="fas fa-code-branch"></i> Code Review Templates</h4>
+                        <p>Template prompts untuk code review dan debugging</p>
+                    </div>
+                    <div class="feature-card" onclick="toggleFeature('seo-content')">
+                        <h4><i class="fas fa-search"></i> SEO Content Prompts</h4>
+                        <p>Prompts untuk content marketing dan SEO optimization</p>
+                    </div>
+                    <div class="feature-card" onclick="toggleFeature('data-analysis')">
+                        <h4><i class="fas fa-chart-line"></i> Data Analysis</h4>
+                        <p>Prompts untuk analisis data dan business intelligence</p>
+                    </div>
+                </div>
+                
+                <button id="generateBtn" class="btn" onclick="generatePrompt()">
+                    <i class="fas fa-magic"></i> Generate Prompt dengan Gemini AI
+                </button>
+                
+                <div class="examples">
+                    <h3><i class="fas fa-lightbulb"></i> Contoh Prompt yang Dihasilkan:</h3>
+                    <div class="example-item">
+                        <strong>🎯 Game + Unity C#:</strong> "Buatlah sistem inventory yang scalable untuk RPG game menggunakan Unity C# dengan pattern observer dan scriptable objects."
+                    </div>
+                    <div class="example-item">
+                        <strong>💻 AI/ML + Python:</strong> "Implementasikan neural network untuk computer vision dengan TensorFlow, termasuk data preprocessing dan model optimization."
+                    </div>
+                    <div class="example-item">
+                        <strong>🔧 Blockchain + Solidity:</strong> "Develop smart contract untuk NFT marketplace dengan gas optimization dan security best practices."
+                    </div>
+                </div>
+                
+                <div class="output">
+                    <div class="output-header">
+                        <h3>Prompt AI yang Dihasilkan</h3>
+                    </div>
+                    <div class="output-content">
+                        <pre id="result">Prompt akan muncul di sini setelah Anda mengklik "Generate Prompt dengan Gemini AI"...
+
+🚀 Tips untuk hasil terbaik:
+• Pilih kombinasi topik dan tipe yang sesuai kebutuhan
+• Gunakan pengaturan kompleksitas sesuai level Anda
+• Aktifkan randomize untuk mendapat variasi prompt yang segar
+• Pilih bahasa programming yang sesuai untuk development prompts
+• Regenerate prompt jika ingin mendapat variasi berbeda
+• Gunakan fitur export untuk menyimpan prompt favorit</pre>
+                    </div>
+                    <div class="output-actions">
+                        <button id="copyBtn" class="copy-btn" onclick="copyToClipboard()">
+                            <i class="fas fa-copy"></i> Salin Prompt
+                        </button>
+                        <button id="regenerateBtn" class="regenerate-btn hidden" onclick="regeneratePrompt()">
+                            <i class="fas fa-redo"></i> Regenerate
+                        </button>
+                        <button id="exportBtn" class="export-btn hidden" onclick="exportPrompt()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <div class="stats">
+                            <span id="wordCount">0 kata</span>
+                            <span id="charCount">0 karakter</span>
+                            <span id="timestamp"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-download"></i> Export Prompt</h3>
+            <p>Pilih format export yang diinginkan:</p>
+            <button class="btn" onclick="exportAs('txt')">📄 Text File (.txt)</button>
+            <button class="btn" onclick="exportAs('md')">📝 Markdown (.md)</button>
+            <button class="btn" onclick="exportAs('json')">📋 JSON (.json)</button>
+            <button class="btn" onclick="closeModal()">❌ Batal</button>
+        </div>
+    </div>
+
+    <script>
+        let GEMINI_API_KEY = '';
+        const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+        
+        let isConnected = false;
+        let lastGeneratedPrompt = '';
+        let currentSettings = {};
+        let selectedFeatures = new Set();
+        
+        // Array untuk variasi gaya penulisan
+        const writingStyles = [
+            'profesional dan formal',
+            'santai namun informatif', 
+            'kreatif dan engaging',
+            'teknis dan detail',
+            'inspiratif dan motivasi',
+            'praktis dan actionable',
+            'analitis dan mendalam',
+            'storytelling yang menarik',
+            'conversational dan friendly',
+            'akademik dan research-based'
+        ];
+        
+        // Array untuk variasi pembuka prompt
+        const promptStarters = [
+            'Buatlah',
+            'Kembangkan',
+            'Rancang',
+            'Ciptakan', 
+            'Desain',
+            'Susun',
+            'Formulasikan',
+            'Konstruksikan',
+            'Implementasikan',
+            'Optimalkan'
+        ];
+        
+        function toggleFeature(featureName) {
+            if (selectedFeatures.has(featureName)) {
+                selectedFeatures.delete(featureName);
+            } else {
+                selectedFeatures.add(featureName);
+            }
+            
+            const card = event.currentTarget;
+            card.style.background = selectedFeatures.has(featureName) 
+                ? 'var(--success-gradient)' 
+                : 'rgba(255, 255, 255, 0.1)';
+            card.style.color = selectedFeatures.has(featureName) ? 'white' : 'inherit';
+        }
+        
+        async function connectToGemini() {
+            const apiKeyInput = document.getElementById('apiKey');
+            GEMINI_API_KEY = apiKeyInput.value.trim();
+            
+            if (!GEMINI_API_KEY) {
+                showModal('❌ Harap masukkan API key Gemini terlebih dahulu!');
+                return;
+            }
+            
+            console.log('Connecting to Gemini AI...');
+            
+            const status = document.getElementById('status');
+            const connectBtn = document.getElementById('connectBtn');
+            
+            status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Status: Menghubungkan ke Gemini AI...';
+            connectBtn.disabled = true;
+            connectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghubungkan... <div class="loading"></div>';
+            
+            try {
+                const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                parts: [
+                                    {
+                                        text: 'Halo, ini test koneksi untuk AI Prompt Generator Pro'
+                                    }
+                                ]
+                            }
+                        ],
+                        generationConfig: {
+                            temperature: 0.1,
+                            maxOutputTokens: 50
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Connection successful:', data);
+                    
+                    isConnected = true;
+                    status.innerHTML = '<i class="fas fa-check-circle"></i> Status: Terhubung ke Gemini AI - Generator siap digunakan!';
+                    connectBtn.innerHTML = '<i class="fas fa-check"></i> Gemini AI Aktif';
+                    connectBtn.disabled = true;
+                    document.getElementById('generatorSection').classList.remove('hidden');
+                    
+                    // Animate success
+                    setTimeout(() => {
+                        showModal('🎉 Berhasil terhubung ke Gemini AI! Generator siap digunakan dengan fitur advanced.');
+                    }, 500);
+                } else {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Connection Error:', error);
+                
+                let errorMessage = '❌ Gagal terhubung ke Gemini AI. ';
+                if (error.message.includes('400')) {
+                    errorMessage += 'API key tidak valid. Pastikan menggunakan API key yang benar.';
+                } else if (error.message.includes('403')) {
+                    errorMessage += 'API key tidak memiliki akses. Pastikan API key sudah diaktifkan.';
+                } else {
+                    errorMessage += 'Periksa koneksi internet atau API key Anda.';
+                }
+                
+                showModal(errorMessage);
+                status.innerHTML = '<i class="fas fa-times-circle"></i> Status: Gagal terhubung ke Gemini AI';
+                connectBtn.disabled = false;
+                connectBtn.innerHTML = '<i class="fas fa-link"></i> Hubungkan ke Gemini AI';
+            }
+        }
+        
+        function showAdditionalOptions() {
+            const topic = document.getElementById('topic').value;
+            const gameOptions = document.getElementById('gameOptions');
+            
+            if (topic === 'game') {
+                gameOptions.classList.remove('hidden');
+            } else {
+                gameOptions.classList.add('hidden');
+            }
+        }
+        
+        function getRandomElement(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+        
+        function generateVariationSeed() {
+            const seeds = [
+                'dengan pendekatan inovatif dan modern',
+                'menggunakan best practices industry terbaru',
+                'dengan perspektif user-centric dan scalable',
+                'secara comprehensive dan well-documented',
+                'dengan optimisasi performance dan security',
+                'menggunakan design patterns yang proven',
+                'dengan implementasi clean code principles',
+                'secara agile dan test-driven development',
+                'dengan focus pada maintainability',
+                'menggunakan microservices architecture'
+            ];
+            return getRandomElement(seeds);
+        }
+        
+        async function generatePrompt() {
+            if (!isConnected) {
+                showModal('⚠️ Harap hubungkan ke Gemini AI terlebih dahulu');
+                return;
+            }
+            
+            // Simpan pengaturan saat ini
+            currentSettings = {
+                topic: document.getElementById('topic').value,
+                promptType: document.getElementById('promptType').value,
+                complexity: document.getElementById('complexity').value,
+                length: document.getElementById('length').value,
+                includeExamples: document.getElementById('includeExamples').checked,
+                randomizeStyle: document.getElementById('randomizeStyle').checked,
+                includeMetrics: document.getElementById('includeMetrics').checked,
+                includeTimeline: document.getElementById('includeTimeline') ? document.getElementById('includeTimeline').checked : false,
+                includeResources: document.getElementById('includeResources') ? document.getElementById('includeResources').checked : false,
+                writingTheme: document.getElementById('writingTheme') ? document.getElementById('writingTheme').value : 'professional',
+                targetAudience: document.getElementById('targetAudience') ? document.getElementById('targetAudience').value : 'general',
+                outputFormat: document.getElementById('outputFormat') ? document.getElementById('outputFormat').value : 'structured',
+                urgencyLevel: document.getElementById('urgencyLevel') ? document.getElementById('urgencyLevel').value : 'medium',
+                selectedFeatures: Array.from(selectedFeatures)
+            };
+            
+            // Tambahkan pengaturan game jika dipilih
+            if (currentSettings.topic === 'game') {
+                currentSettings.gameTheme = document.getElementById('gameTheme').value;
+                currentSettings.gameMechanics = document.getElementById('gameMechanics').value;
+                currentSettings.programmingLanguage = document.getElementById('programmingLanguage').value;
+                currentSettings.gameEngine = document.getElementById('gameEngine').value;
+            }
+            
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating dengan Gemini... <div class="loading"></div>';
+            
+            try {
+                const prompt = await buildPrompt();
+                const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                parts: [
+                                    {
+                                        text: prompt
+                                    }
+                                ]
+                            }
+                        ],
+                        generationConfig: {
+                            temperature: currentSettings.randomizeStyle ? (0.8 + Math.random() * 0.4) : 0.7,
+                            maxOutputTokens: currentSettings.length === 'micro' ? 200 :
+                                           currentSettings.length === 'brief' ? 400 :
+                                           currentSettings.length === 'short' ? 600 : 
+                                           currentSettings.length === 'medium' ? 1000 :
+                                           currentSettings.length === 'detailed' ? 1400 :
+                                           currentSettings.length === 'long' ? 1800 :
+                                           currentSettings.length === 'comprehensive' ? 2500 :
+                                           currentSettings.length === 'extensive' ? 3500 : 4000
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                        const generatedPrompt = data.candidates[0].content.parts[0].text;
+                        lastGeneratedPrompt = generatedPrompt;
+                        
+                        displayResult(generatedPrompt);
+                        document.getElementById('regenerateBtn').classList.remove('hidden');
+                        document.getElementById('exportBtn').classList.remove('hidden');
+                        
+                        // Smooth scroll to result
+                        document.getElementById('result').scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start' 
+                        });
+                    } else {
+                        throw new Error('Unexpected response format');
+                    }
+                } else {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Generate Error:', error);
+                showModal('❌ Gagal menggenerate prompt. Silakan coba lagi.');
+                document.getElementById('result').textContent = `❌ Error: Gagal menggenerate prompt. ${error.message}`;
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Prompt dengan Gemini AI';
+            }
+        }
+        
+        async function regeneratePrompt() {
+            if (!currentSettings.topic) {
+                showModal('⚠️ Harap generate prompt terlebih dahulu');
+                return;
+            }
+            
+            // Gunakan pengaturan yang sama tapi dengan variasi
+            await generatePrompt();
+        }
+        
+        async function buildPrompt() {
+            const topics = {
+                'pekerjaan': 'pekerjaan dan karir profesional',
+                'hobi': 'hobi dan minat personal',
+                'teknologi': 'teknologi dan inovasi digital',
+                'game': 'game development dan interactive media',
+                'kesehatan': 'kesehatan dan wellness',
+                'pendidikan': 'pendidikan dan pembelajaran',
+                'lingkungan': 'lingkungan dan sustainability',
+                'bisnis': 'bisnis dan entrepreneurship',
+                'seni': 'seni dan kreativitas',
+                'perjalanan': 'perjalanan dan wisata',
+                'makanan': 'makanan dan kuliner',
+                'programming': 'programming dan software development',
+                'ai_ml': 'artificial intelligence dan machine learning',
+                'blockchain': 'blockchain dan cryptocurrency',
+                'cybersecurity': 'cybersecurity dan information security',
+                'web_development': 'web development dan frontend/backend',
+                'mobile_dev': 'mobile development dan aplikasi mobile',
+                'data_science': 'data science dan analytics',
+                'devops': 'DevOps dan cloud computing',
+                'digital_marketing': 'digital marketing dan online promotion',
+                'ecommerce': 'e-commerce dan retail online',
+                'finansial': 'finansial dan investasi',
+                'psikologi': 'psikologi dan behavioral science',
+                'komunikasi': 'komunikasi dan public speaking',
+                'kepemimpinan': 'kepemimpinan dan management',
+                'produktivitas': 'produktivitas dan time management',
+                'real_estate': 'real estate dan properti',
+                'fashion': 'fashion dan style',
+                'fotografi': 'fotografi dan videografi',
+                'musik': 'musik dan audio production',
+                'olahraga': 'olahraga dan fitness',
+                'parenting': 'parenting dan family',
+                'relationship': 'relationship dan dating',
+                'spiritual': 'spiritual dan mindfulness',
+                'science': 'science dan research',
+                'hukum': 'hukum dan legal',
+                'automotive': 'automotive dan transportation',
+                'agriculture': 'agriculture dan farming',
+                'interior_design': 'interior design dan architecture',
+                'social_media': 'social media dan content creation',
+                'nonprofit': 'nonprofit dan social impact'
+            };
+            
+            const complexityLevels = {
+                'beginner': 'tingkat beginner (pemula total) yang sangat mudah dipahami',
+                'simple': 'tingkat simple (mudah) dengan penjelasan basic',
+                'intermediate': 'tingkat intermediate (menengah) dengan detail memadai',
+                'advanced': 'tingkat advanced (lanjutan) dengan analisis mendalam',
+                'expert': 'tingkat expert (ahli) dengan kompleksitas tinggi',
+                'professional': 'tingkat professional dengan standar industri',
+                'enterprise': 'tingkat enterprise dengan scalability dan best practices',
+                'research': 'tingkat research dengan metodologi ilmiah',
+                'consultant': 'tingkat consultant dengan strategic insight',
+                'industry_leader': 'tingkat industry leader dengan innovation mindset'
+            };
+            
+            const lengthSpecs = {
+                'micro': 'sangat ringkas dan fokus (50-100 kata)',
+                'brief': 'brief dan to-the-point (100-200 kata)',
+                'short': 'ringkas namun informatif (200-350 kata)',
+                'medium': 'sedang dengan detail memadai (350-600 kata)',
+                'detailed': 'detailed dengan analisis mendalam (600-900 kata)',
+                'long': 'panjang dan komprehensif (900-1200 kata)',
+                'comprehensive': 'sangat comprehensive dan detail (1200-1800 kata)',
+                'extensive': 'extensive dengan case studies (1800-2500 kata)',
+                'ultimate': 'ultimate guide yang sangat lengkap (2500+ kata)'
+            };
+            
+            let gameDetails = '';
+            if (currentSettings.topic === 'game') {
+                const gameTheme = currentSettings.gameTheme;
+                const gameMechanics = currentSettings.gameMechanics;
+                const programmingLanguage = currentSettings.programmingLanguage;
+                const gameEngine = currentSettings.gameEngine;
+                gameDetails = ` dengan tema ${gameTheme}, mekanisme ${gameMechanics}, menggunakan ${programmingLanguage} di ${gameEngine}`;
+            }
+            
+            const randomStarter = currentSettings.randomizeStyle ? getRandomElement(promptStarters) : 'Buatlah';
+            const randomStyle = currentSettings.randomizeStyle ? getRandomElement(writingStyles) : 'profesional dan informatif';
+            const variationSeed = currentSettings.randomizeStyle ? generateVariationSeed() : '';
+            
+            const exampleInstruction = currentSettings.includeExamples ? 
+                '\n8. Sertakan 3-4 contoh konkret atau ilustrasi yang relevan dan actionable' : '';
+            
+            const metricsInstruction = currentSettings.includeMetrics ? 
+                '\n9. Include relevant metrics, KPIs, atau success criteria yang dapat diukur' : '';
+            
+            let featureInstructions = '';
+            if (currentSettings.selectedFeatures.length > 0) {
+                featureInstructions = '\n\nFITUR TAMBAHAN YANG DIAKTIFKAN:\n';
+                currentSettings.selectedFeatures.forEach(feature => {
+                    switch(feature) {
+                        case 'advanced-ai':
+                            featureInstructions += '- Optimasi untuk AI model terbaru (GPT-4, Claude, Gemini)\n';
+                            break;
+                        case 'code-review':
+                            featureInstructions += '- Template untuk code review dan debugging sistematis\n';
+                            break;
+                        case 'seo-content':
+                            featureInstructions += '- SEO optimization dan content marketing strategies\n';
+                            break;
+                        case 'data-analysis':
+                            featureInstructions += '- Data analysis framework dan business intelligence\n';
+                            break;
+                    }
+                });
+            }
+            
+            const timestamp = new Date().getTime();
+            const uniqueElement = currentSettings.randomizeStyle ? 
+                `\n\nELEMEN UNIK SESSION: ${generateVariationSeed()} dengan gaya ${randomStyle}. ID: ${timestamp % 10000}` : '';
+            
+            return `Anda adalah expert dalam membuat prompt AI yang sangat efektif, terstruktur, dan berkualitas enterprise-level. 
+
+TUGAS UTAMA: ${randomStarter} prompt AI yang sangat detail, comprehensive, dan actionable tentang ${topics[currentSettings.topic]}${gameDetails} dengan tipe ${currentSettings.promptType}.
+
+SPESIFIKASI TEKNIS:
+- Kompleksitas: ${complexityLevels[currentSettings.complexity]}
+- Panjang output: ${lengthSpecs[currentSettings.length]}
+- Gaya penulisan: ${randomStyle}
+- Variasi approach: ${variationSeed}
+
+KRITERIA PROMPT YANG HARUS DIBUAT:
+1. SANGAT spesifik dan actionable dengan clear deliverables
+2. Menggunakan bahasa Indonesia yang profesional dan precis
+3. Struktur hierarkis yang jelas dengan numbering/bullet points
+4. Konteks bisnis yang comprehensive dan realistic
+5. Target output yang measurable dan verifiable
+6. Include persona/role yang tepat dan specific untuk AI
+7. Optimized untuk menghasilkan response berkualitas enterprise-level${exampleInstruction}${metricsInstruction}
+10. Include constraint, batasan, dan requirement yang specific
+11. Framework atau methodology yang proven dan industry-standard
+12. Technology stack dan tools recommendation yang relevant
+
+ADVANCED REQUIREMENTS:
+- Buat prompt yang benar-benar innovative dan cutting-edge
+- Gunakan approach yang unique dan belum mainstream
+- Include specific tech stack, frameworks, dan best practices
+- Pastikan scalability dan maintainability considerations
+- Add security, performance, dan accessibility requirements
+- Include testing strategy dan quality assurance measures
+
+${featureInstructions}
+
+DELIVERABLE FORMAT:
+- Clear problem statement dan objectives
+- Specific requirements dan acceptance criteria
+- Technical implementation guidance
+- Expected outcomes dan success metrics
+- Risk mitigation dan troubleshooting guide
+
+${uniqueElement}
+
+Generate prompt AI yang truly outstanding dan industry-leading sekarang!`;
+        }
+        
+        function displayResult(text) {
+            document.getElementById('result').textContent = text;
+            
+            // Update statistics
+            const wordCount = text.trim().split(/\s+/).length;
+            const charCount = text.length;
+            const timestamp = new Date().toLocaleString('id-ID');
+            
+            document.getElementById('wordCount').textContent = `${wordCount} kata`;
+            document.getElementById('charCount').textContent = `${charCount} karakter`;
+            document.getElementById('timestamp').textContent = `Generated: ${timestamp}`;
+        }
+        
+        function copyToClipboard() {
+            const promptText = document.getElementById('result').textContent;
+            const copyBtn = document.getElementById('copyBtn');
+            
+            if (promptText && !promptText.includes('Prompt akan muncul di sini')) {
+                navigator.clipboard.writeText(promptText)
+                    .then(() => {
+                        const originalText = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<i class="fas fa-check"></i> Tersalin!';
+                        copyBtn.style.background = 'var(--success-gradient)';
+                        
+                        setTimeout(() => {
+                            copyBtn.innerHTML = originalText;
+                            copyBtn.style.background = 'var(--success-gradient)';
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Gagal menyalin: ', err);
+                        showModal('❌ Gagal menyalin prompt. Silakan copy manual.');
+                    });
+            } else {
+                showModal('⚠️ Tidak ada prompt untuk disalin. Generate prompt terlebih dahulu!');
+            }
+        }
+        
+        function exportPrompt() {
+            if (!lastGeneratedPrompt) {
+                showModal('⚠️ Tidak ada prompt untuk diexport. Generate prompt terlebih dahulu!');
+                return;
+            }
+            document.getElementById('exportModal').classList.add('show');
+        }
+        
+        function exportAs(format) {
+            const prompt = lastGeneratedPrompt;
+            const timestamp = new Date().toISOString().slice(0,10);
+            const topic = currentSettings.topic || 'general';
+            
+            let content, filename, mimeType;
+            
+            switch(format) {
+                case 'txt':
+                    content = prompt;
+                    filename = `prompt_${topic}_${timestamp}.txt`;
+                    mimeType = 'text/plain';
+                    break;
+                case 'md':
+                    content = `# AI Prompt - ${topic.toUpperCase()}\n\n**Generated:** ${new Date().toLocaleString('id-ID')}\n\n**Settings:**\n- Topic: ${currentSettings.topic}\n- Type: ${currentSettings.promptType}\n- Complexity: ${currentSettings.complexity}\n\n---\n\n${prompt}`;
+                    filename = `prompt_${topic}_${timestamp}.md`;
+                    mimeType = 'text/markdown';
+                    break;
+                case 'json':
+                    content = JSON.stringify({
+                        prompt: prompt,
+                        settings: currentSettings,
+                        generated_at: new Date().toISOString(),
+                        stats: {
+                            word_count: prompt.trim().split(/\s+/).length,
+                            char_count: prompt.length
+                        }
+                    }, null, 2);
+                    filename = `prompt_${topic}_${timestamp}.json`;
+                    mimeType = 'application/json';
+                    break;
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            closeModal();
+            showModal(`✅ Prompt berhasil diexport sebagai ${format.toUpperCase()}!`);
+        }
+        
+        function showModal(message) {
+            const modal = document.getElementById('exportModal');
+            modal.querySelector('.modal-content h3').innerHTML = '<i class="fas fa-info-circle"></i> Info';
+            modal.querySelector('.modal-content p').textContent = message;
+            modal.querySelector('.modal-content').innerHTML = `
+                <h3><i class="fas fa-info-circle"></i> Info</h3>
+                <p>${message}</p>
+                <button class="btn" onclick="closeModal()">OK</button>
+            `;
+            modal.classList.add('show');
+        }
+        
+        function closeModal() {
+            document.getElementById('exportModal').classList.remove('show');
+            // Reset modal content for export
+            setTimeout(() => {
+                document.getElementById('exportModal').querySelector('.modal-content').innerHTML = `
+                    <h3><i class="fas fa-download"></i> Export Prompt</h3>
+                    <p>Pilih format export yang diinginkan:</p>
+                    <button class="btn" onclick="exportAs('txt')">📄 Text File (.txt)</button>
+                    <button class="btn" onclick="exportAs('md')">📝 Markdown (.md)</button>
+                    <button class="btn" onclick="exportAs('json')">📋 JSON (.json)</button>
+                    <button class="btn" onclick="closeModal()">❌ Batal</button>
+                `;
+            }, 300);
+        }
+        
+        // Enhanced API key handling functions
+        async function pasteFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                const apiKeyInput = document.getElementById('apiKey');
+                const pasteBtn = document.querySelector('.paste-btn');
+                const statusElement = document.getElementById('apiKeyStatus');
+                
+                if (text.trim()) {
+                    apiKeyInput.value = text.trim();
+                    
+                    // Smooth animation for successful paste
+                    const originalHTML = pasteBtn.innerHTML;
+                    pasteBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    pasteBtn.style.background = 'var(--success-gradient)';
+                    pasteBtn.style.transform = 'scale(1.1)';
+                    
+                    // Update status
+                    updateApiKeyStatus('success', 'API key berhasil di-paste dari clipboard');
+                    
+                    setTimeout(() => {
+                        pasteBtn.innerHTML = originalHTML;
+                        pasteBtn.style.background = 'var(--primary-gradient)';
+                        pasteBtn.style.transform = 'scale(1)';
+                    }, 2000);
+                    
+                    // Trigger validation after paste
+                    setTimeout(() => {
+                        validateApiKey();
+                    }, 500);
+                    
+                    // Focus animation
+                    apiKeyInput.focus();
+                    apiKeyInput.style.animation = 'inputGlow 1s ease-out';
+                    setTimeout(() => {
+                        apiKeyInput.style.animation = '';
+                    }, 1000);
+                } else {
+                    updateApiKeyStatus('warning', 'Clipboard kosong atau tidak mengandung teks');
+                }
+            } catch (err) {
+                console.error('Gagal mengakses clipboard:', err);
+                updateApiKeyStatus('error', 'Gagal mengakses clipboard. Pastikan browser mendukung fitur ini.');
+            }
+        }
+        
+        function clearApiKey() {
+            const apiKeyInput = document.getElementById('apiKey');
+            const clearBtn = document.querySelector('.clear-btn');
+            
+            // Smooth clear animation
+            apiKeyInput.style.transition = 'all 0.3s ease';
+            apiKeyInput.style.transform = 'scale(0.95)';
+            apiKeyInput.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                apiKeyInput.value = '';
+                apiKeyInput.style.transform = 'scale(1)';
+                apiKeyInput.style.opacity = '1';
+                updateApiKeyStatus('info', 'API key telah dihapus. Masukkan API key baru.');
+            }, 150);
+            
+            // Clear button animation
+            const originalHTML = clearBtn.innerHTML;
+            clearBtn.innerHTML = '<i class="fas fa-check"></i>';
+            clearBtn.style.transform = 'scale(1.1)';
+            
+            setTimeout(() => {
+                clearBtn.innerHTML = originalHTML;
+                clearBtn.style.transform = 'scale(1)';
+            }, 1000);
+        }
+        
+        function validateApiKey() {
+            const apiKeyInput = document.getElementById('apiKey');
+            const validateBtn = document.querySelector('.validate-btn');
+            const apiKey = apiKeyInput.value.trim();
+            
+            // Validate button animation
+            const originalHTML = validateBtn.innerHTML;
+            validateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            validateBtn.style.transform = 'scale(1.1)';
+            
+            setTimeout(() => {
+                if (!apiKey) {
+                    updateApiKeyStatus('warning', 'Masukkan API key terlebih dahulu');
+                    validateBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    validateBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                } else if (apiKey.length < 20) {
+                    updateApiKeyStatus('error', 'API key terlalu pendek. Pastikan format sudah benar');
+                    validateBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    validateBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                } else if (!apiKey.startsWith('AIza')) {
+                    updateApiKeyStatus('warning', 'Format API key mungkin tidak valid. Pastikan menggunakan Gemini API key');
+                    validateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                    validateBtn.style.background = 'linear-gradient(135deg, #f39c12, #e67e22)';
+                } else {
+                    updateApiKeyStatus('success', 'Format API key valid! Klik "Hubungkan ke Gemini AI" untuk melanjutkan');
+                    validateBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    validateBtn.style.background = 'var(--success-gradient)';
+                    
+                    // Trigger connect button highlight
+                    const connectBtn = document.getElementById('connectBtn');
+                    connectBtn.style.animation = 'buttonPulse 2s ease-in-out 3';
+                }
+                
+                setTimeout(() => {
+                    validateBtn.innerHTML = originalHTML;
+                    validateBtn.style.background = 'var(--success-gradient)';
+                    validateBtn.style.transform = 'scale(1)';
+                }, 2000);
+            }, 1000);
+        }
+        
+        function updateApiKeyStatus(type, message) {
+            const statusElement = document.getElementById('apiKeyStatus');
+            const icons = {
+                'info': 'fas fa-info-circle',
+                'success': 'fas fa-check-circle',
+                'warning': 'fas fa-exclamation-triangle',
+                'error': 'fas fa-times-circle'
+            };
+            
+            statusElement.className = `api-key-status ${type}`;
+            statusElement.innerHTML = `
+                <i class="${icons[type]}"></i>
+                <span>${message}</span>
+            `;
+            
+            // Smooth status animation
+            statusElement.style.animation = 'statusSlideIn 0.5s ease-out';
+            setTimeout(() => {
+                statusElement.style.animation = '';
+            }, 500);
+        }
+        
+        // Enhanced Event listeners with keyboard shortcuts
+        document.getElementById('apiKey').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                connectToGemini();
+            }
+        });
+        
+        // Real-time API key validation
+        document.getElementById('apiKey').addEventListener('input', function(e) {
+            const apiKey = e.target.value.trim();
+            if (apiKey.length > 0) {
+                if (apiKey.length < 20) {
+                    updateApiKeyStatus('warning', 'API key terlalu pendek...');
+                } else if (!apiKey.startsWith('AIza')) {
+                    updateApiKeyStatus('warning', 'Format API key mungkin tidak valid...');
+                } else {
+                    updateApiKeyStatus('success', 'Format API key terlihat valid!');
+                }
+            } else {
+                updateApiKeyStatus('info', 'Masukkan API key untuk memulai');
+            }
+        });
+        
+        // Global keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+V for paste (when input is focused)
+            if (e.ctrlKey && e.key === 'v' && document.activeElement.id === 'apiKey') {
+                setTimeout(() => {
+                    const apiKey = document.getElementById('apiKey').value.trim();
+                    if (apiKey) {
+                        updateApiKeyStatus('success', 'API key berhasil di-paste!');
+                        setTimeout(() => validateApiKey(), 500);
+                    }
+                }, 100);
+            }
+            
+            // Ctrl+Enter for quick connect
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                if (!isConnected) {
+                    connectToGemini();
+                } else {
+                    generatePrompt();
+                }
+            }
+            
+            // Escape to clear API key
+            if (e.key === 'Escape' && document.activeElement.id === 'apiKey') {
+                clearApiKey();
+            }
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('exportModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        // Auto-save settings to localStorage
+        function saveSettings() {
+            localStorage.setItem('promptGeneratorSettings', JSON.stringify(currentSettings));
+        }
+        
+        function loadSettings() {
+            const saved = localStorage.getItem('promptGeneratorSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                Object.keys(settings).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = settings[key];
+                        } else {
+                            element.value = settings[key];
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Parallax effect for floating shapes
+        window.addEventListener('scroll', () => {
+            const shapes = document.querySelectorAll('.shape');
+            const scrolled = window.pageYOffset;
+            shapes.forEach((shape, index) => {
+                const rate = scrolled * -0.5 * (index + 1);
+                shape.style.transform = `translateY(${rate}px)`;
+            });
+        });
+        
+        // Load settings on page load
+        window.addEventListener('load', loadSettings);
+        
+        // Add smooth hover effects
+        document.querySelectorAll('.btn, .copy-btn, .regenerate-btn, .export-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px) scale(1.05)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
